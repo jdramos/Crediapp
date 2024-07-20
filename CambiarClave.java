@@ -140,21 +140,18 @@ public class CambiarClave extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), Dashbord.class);
                             startActivity(intent);
                             progreso.dismiss();
-
                         }
 
                         if (response.contains("EXISTE")){
                             Toast.makeText(getApplicationContext(), "Esta constraseña ya ha sido usada", Toast.LENGTH_SHORT).show();
                             progreso.dismiss();
                             return;
-
                         }
 
                         if (response.contains("ERROR")){
                             Toast.makeText(getApplicationContext(), "Error al actualizar contraseña o usuario no existe", Toast.LENGTH_SHORT).show();
                             progreso.dismiss();
                             return;
-
                         }
 
                     }

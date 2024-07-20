@@ -20,6 +20,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,7 +59,6 @@ public class Login extends AppCompatActivity {
     TelephonyManager tm;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,17 +68,25 @@ public class Login extends AppCompatActivity {
         textInputUsuario  = findViewById(R.id.text_input_usuario);
         textInputPassword = findViewById(R.id.text_input_password);
         tvOlvido = findViewById(R.id.olvido);
-        
+
 
         btIngresa.setOnClickListener(new View.OnClickListener() {
             @Override
+
+
             public void onClick(View v) {
+
+                // Check network availability
+                if (!NetworkUtils.isNetworkAvailable(getApplicationContext())) {
+                    Toast.makeText(getApplicationContext(), "Conexión no disponible, verifique.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 etuser = textInputUsuario.getEditText().getText().toString().trim();
                 etpass = textInputPassword.getEditText().getText().toString().trim();
-                //buscarUser("https://www.nicaraguahosting.com/crediapp/validaruser2.php?nomUser="+ etuser + "&pasUser=" + etpass +"&token="+aleatorio());
-                buscarUser("https://www.nicaraguahosting.com/crediapp/validaruser3.php?nomUser="+ etuser + "&pasUser=" + etpass +"&token="+aleatorio());
+                buscarUser("https://www.nicaraguahosting.com/crediapp/validaruser2.php?nomUser="+ etuser + "&pasUser=" + etpass +"&token="+aleatorio());
+                //buscarUser("https://www.nicaraguahosting.com/crediapp/validaruser3.php?nomUser="+ etuser + "&pasUser=" + etpass +"&token="+aleatorio());
 
-                Toast.makeText(getApplicationContext(), imei, Toast.LENGTH_SHORT).show();
+                
               
             }
         });

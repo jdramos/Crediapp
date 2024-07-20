@@ -17,6 +17,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,7 +65,7 @@ public class solicitudes_agregar extends AppCompatActivity {
                 txtRecordInterno, observa, saldoActual, txtFechaActualizacion;
     Button btGuardar;
     ProgressDialog progreso;
-    String spNomSuc, spCodOfi, spToken, spWeb, spEmpresa, url, nomUser,
+    String spNomSuc, spCodOfi, spToken, spWeb, spEmpresa, url, nomUser, tipoSolicitud,
             urlClientes, rolUser, nombre, codcli, strSaldoActual, fechaActualizacion;
     SharedPreferences preferencias;
     ArrayList<clientesModel> listaClientes = new ArrayList<clientesModel>();
@@ -118,6 +120,8 @@ public class solicitudes_agregar extends AppCompatActivity {
         final ArrayAdapter<clientesModel> adapterCliente =
                 new ArrayAdapter<clientesModel>(getApplicationContext(),
                         android.R.layout.simple_spinner_dropdown_item, listaClientes);
+
+
 
         btGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,8 +181,6 @@ public class solicitudes_agregar extends AppCompatActivity {
                     txtFechaActualizacion.setText(fechaActualizacion);
             }
         });
-
-
 
         spFrecuencia.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
@@ -508,7 +510,7 @@ public class solicitudes_agregar extends AppCompatActivity {
                 parametros.put("plazo", txtPlazo.getText().toString());
                 parametros.put("tasa", txtTasa.getText().toString());
                 parametros.put("frecuencia",spFrecuencia.getSelectedItem().toString());
-                parametros.put("tipCre","Represtamo");
+                parametros.put("tipCre",tipoSolicitud);
                 parametros.put("numSuc",spNomSuc);
                 parametros.put("token",spToken);
                 parametros.put("cuotasxmes", txtCuota.getText().toString());
@@ -559,6 +561,23 @@ public class solicitudes_agregar extends AppCompatActivity {
         progreso.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 
+    }
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radioNueva:
+                if (checked)
+                    tipoSolicitud = "Nuevo";
+                    break;
+            case R.id.radioReprestamo:
+                if (checked)
+                    tipoSolicitud = "Represtamo";
+                    break;
+        }
     }
 
 

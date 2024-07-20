@@ -52,7 +52,6 @@ public class ListaSaldos extends AppCompatActivity  {
     ListView lvProduct;
     ArrayList<SaldosModel> arrayList;
     SaldosListAdapter adapter;
-    //SearchView searchView;
     ProgressDialog progreso;
     Functions functions = new Functions();
     TextView tvNombreOficial;
@@ -84,13 +83,10 @@ public class ListaSaldos extends AppCompatActivity  {
         spRol = preferencias.getString("rol", null);
         tvNombreOficial = findViewById(R.id.tvNomOfi);
         lvProduct = findViewById(R.id.listview_saldos);
-       // searchView = findViewById(R.id.txtBuscar);
         arrayList = new ArrayList<>();
         adapter = new SaldosListAdapter(this, arrayList, spEmpresa, strRol);
 
-
         loading();
-
 
         strRol    = getIntent().getStringExtra("rol");
         String strCodOfi = getIntent().getStringExtra("codOfi");
@@ -103,8 +99,6 @@ public class ListaSaldos extends AppCompatActivity  {
         url = spWeb+"/"+spEmpresa+"/listar_saldos.php?rol="+strRol+
                 "&codOfi="+strCodOfi+"&numSuc="+strNumSuc;
         saldos(url);
-
-
 
         lvProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -279,9 +273,6 @@ public class ListaSaldos extends AppCompatActivity  {
         requestQueue.add(jsonArrayRequest);
 
     }
-
-
-
 
     private void capturarPago (int pos){
         SaldosModel sm = (SaldosModel) adapter.getItem(pos);

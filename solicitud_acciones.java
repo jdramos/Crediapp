@@ -1,5 +1,8 @@
 package com.example.credimovil;
 
+import static com.android.volley.Response.*;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,9 +28,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -83,31 +91,7 @@ public class solicitud_acciones extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_solicitud_acciones);
 
-
-        tvTitulo = findViewById(R.id.textViewTitulo);
-        txtCliente = findViewById(R.id.txtCliente);
-        txtSaldoActual = findViewById(R.id.txtSaldoActual);
-        txtMontoSol = findViewById(R.id.txtMontoSol);
-        txtTasa = findViewById(R.id.txtTasa);
-        txtPlazo = findViewById(R.id.txtPlazo);
-        spFrecuencia = findViewById(R.id.spFrecuencia);
-        txtCuota = findViewById(R.id.txtCuota);
-        txtTotPagar = findViewById(R.id.txtTotPagar);
-        txtCapacidadPago = findViewById(R.id.txtCapacidadPago);
-        txtCoberturaGarantia = findViewById(R.id.txtCoberturaGarantia);
-        txtconsultaCrediticia = findViewById(R.id.txtConsultaCretidicia);
-        txtRecordInterno = findViewById(R.id.txtRecordInterno);
-        txtComentarios = findViewById(R.id.txtComentarios);
-        txtFechaActualizacion = findViewById(R.id.txtFechaActualizacion);
-        floatMenu = findViewById(R.id.floatMenu);
-        floatSave = findViewById(R.id.fiSave);
-        floatReject = findViewById(R.id.fiReject);
-        floatDelete = findViewById(R.id.fiDelete);
-        tvErrorMonto = findViewById(R.id.tvErrorMonto);
-        tvErrorCuota = findViewById(R.id.tvErrorCuota);
-        tvErrorFecha = findViewById(R.id.tvErrorFecha);
-
-        btnGuardar = findViewById(R.id.btGuardar);
+        initializeViews();
 
 
         preferencias = getSharedPreferences("usuario", Context.MODE_PRIVATE);
@@ -190,13 +174,8 @@ public class solicitud_acciones extends AppCompatActivity {
 
 
          */
-        this.setTitle("Detalle de solicitud.");
+        this.setTitle("Detalle de solicitud " + idSolicitud);
         this.setTitleColor(R.color.blue);
-        if(!aprobada.equals("N")){
-            btnAprobar.setVisibility(View.GONE);
-            btnEliminar.setVisibility(View.GONE);
-            btnRechazar.setVisibility(View.GONE);
-        }
 
         if (rol.equals("3")){
             floatMenu.setVisibility(View.GONE);
@@ -240,8 +219,6 @@ public class solicitud_acciones extends AppCompatActivity {
 
             }
         });
-
-
 
         txtMontoSol.addTextChangedListener(new TextWatcher() {
             @Override
@@ -343,95 +320,116 @@ public class solicitud_acciones extends AppCompatActivity {
                 }else{
                     Toast.makeText(getApplicationContext(), "Monto y/o plazo debe ser mayor a cero", Toast.LENGTH_SHORT).show();
                 }
-
             }
+        });
+
+        floatSave.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(solicitud_acciones.this);
+            builder.setMessage("Confirme aprobar solicitud")
+                    .setPositiveButton("Confirmar", (dialog, which) -> {
+                        accion = "A";
+                        plazoaprobado = txtPlazo.getText().toString();
+                        tasaAprobada = txtTasa.getText().toString();
+                        montoaprobado = txtMontoSol.getText().toString();
+                       // url = spWeb+"/"+spEmpresa+"/solicitud_acciones.php";
+                        url = "https://www.nicaraguahosting.com/nestor/solicitud_acciones.php?" +
+                                "idSolicitud=" + idSolicitud +
+                                "&accion=" + accion +
+                                "&rol=" + rol +
+                                "&user=" + nomuser +
+                                "&montoaprobado=" + montoaprobado +
+                                "&tasaaprobada=" + tasaAprobada +
+                                "&plazoaprobado=" + plazoaprobado;
+                        accionSolicitud(url);
+                    })
+                    .setNegativeButton("Cancelar", null);
+
+            AlertDialog alert = builder.create();
+            alert.show();
 
 
         });
 
-        floatSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(solicitud_acciones.this);
-                builder.setMessage("Confirme aprobar solicitud")
-                        .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                accion = "A";
-                                plazoaprobado = txtPlazo.getText().toString();
-                                tasaAprobada = txtTasa.getText().toString();
-                                montoaprobado = txtMontoSol.getText().toString();
-                                url = spWeb+"/"+spEmpresa+"/solicitud_acciones.php?idSolicitud="+idSolicitud+
-                                        "&accion="+accion+"&rol="+rol+"&user=CrediApp:"+nomuser+"&montoaprobado="+montoaprobado+
-                                "&tasaaprobada="+tasaAprobada+"&plazoaprobado="+plazoaprobado;
+        floatDelete.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(solicitud_acciones.this);
+            builder.setMessage("Confirme eliminar solicitud")
+                    .setPositiveButton("Confirmar", (dialog, which) -> {
+                        accion = "E";
+                        plazoaprobado = "0";
+                        tasaAprobada = "0";
+                        montoaprobado = "0";
+                       // url = spWeb+"/"+spEmpresa+"/solicitud_acciones.php";
+                        url = "https://www.nicaraguahosting.com/nestor/solicitud_acciones.php?" +
+                                "idSolicitud=" + idSolicitud +
+                                "&accion=" + accion +
+                                "&rol=" + rol +
+                                "&user=" + nomuser +
+                                "&montoaprobado=" + montoaprobado +
+                                "&tasaaprobada=" + tasaAprobada +
+                                "&plazoaprobado=" + plazoaprobado;
+                        accionSolicitud(url);
+                    })
+                    .setNegativeButton("Cancelar", null);
 
-                                accionSolicitud(url);
-                            }
-                        })
-                        .setNegativeButton("Cancelar", null);
-
-                AlertDialog alert = builder.create();
-                alert.show();
+            AlertDialog alert = builder.create();
+            alert.show();
 
 
-            }
         });
 
-        floatDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(solicitud_acciones.this);
-                builder.setMessage("Confirme eliminar solicitud")
-                        .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                accion = "E";
-                                plazoaprobado = "0";
-                                tasaAprobada = "0";
-                                montoaprobado = "0";
-                                url = spWeb+"/"+spEmpresa+"/accion_solicitud.php?idSolicitud="+idSolicitud+
-                                        "&accion="+accion+"&user="+nomuser+"&montoaprobado="+montoaprobado+
-                                        "&tasaaprobada="+tasaAprobada+"&plazoaprobado="+plazoaprobado;
-
-                                accionSolicitud(url);
-                            }
-                        })
-                        .setNegativeButton("Cancelar", null);
-
-                AlertDialog alert = builder.create();
-                alert.show();
-
-
-            }
-        });
-
-        floatReject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(solicitud_acciones.this);
-                builder.setMessage("Confirme rechazar solicitud")
-                        .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                accion = "R";
-                                plazoaprobado = "0";
-                                tasaAprobada = "0";
-                                montoaprobado = "0";
-
-                                url = spWeb+"/"+spEmpresa+"/accion_solicitud.php?idSolicitud="+idSolicitud+
-                                        "&accion="+accion+"&user="+nomuser+"&montoaprobado="+montoaprobado+
-                                        "&tasaaprobada="+tasaAprobada+"&plazoaprobado="+plazoaprobado;
-                                accionSolicitud(url);
-                            }
-                        })
-                        .setNegativeButton("Cancelar", null);
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
+        floatReject.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(solicitud_acciones.this);
+            builder.setMessage("Confirme rechazar solicitud")
+                    .setPositiveButton("Confirmar", (dialog, which) -> {
+                        accion = "R";
+                        plazoaprobado = "0";
+                        tasaAprobada = "0";
+                        montoaprobado = "0";
+                       // url = spWeb+"/"+spEmpresa+"/solicitud_acciones.php";
+                        url = "https://www.nicaraguahosting.com/nestor/solicitud_acciones.php?" +
+                                "idSolicitud=" + idSolicitud +
+                                "&accion=" + accion +
+                                "&rol=" + rol +
+                                "&user=" +nomuser +
+                                "&montoaprobado=" + montoaprobado +
+                                "&tasaaprobada=" + tasaAprobada +
+                                "&plazoaprobado=" + plazoaprobado;
+                        accionSolicitud( url);
+                    })
+                    .setNegativeButton("Cancelar", null);
+            AlertDialog alert = builder.create();
+            alert.show();
         });
 
     }
 
+    private  void initializeViews(){
+
+        tvTitulo = findViewById(R.id.textViewTitulo);
+        txtCliente = findViewById(R.id.txtCliente);
+        txtSaldoActual = findViewById(R.id.txtSaldoActual);
+        txtMontoSol = findViewById(R.id.txtMontoSol);
+        txtTasa = findViewById(R.id.txtTasa);
+        txtPlazo = findViewById(R.id.txtPlazo);
+        spFrecuencia = findViewById(R.id.spFrecuencia);
+        txtCuota = findViewById(R.id.txtCuota);
+        txtTotPagar = findViewById(R.id.txtTotPagar);
+        txtCapacidadPago = findViewById(R.id.txtCapacidadPago);
+        txtCoberturaGarantia = findViewById(R.id.txtCoberturaGarantia);
+        txtconsultaCrediticia = findViewById(R.id.txtConsultaCretidicia);
+        txtRecordInterno = findViewById(R.id.txtRecordInterno);
+        txtComentarios = findViewById(R.id.txtComentarios);
+        txtFechaActualizacion = findViewById(R.id.txtFechaActualizacion);
+        floatMenu = findViewById(R.id.floatMenu);
+        floatSave = findViewById(R.id.fiSave);
+        floatReject = findViewById(R.id.fiReject);
+        floatDelete = findViewById(R.id.fiDelete);
+        tvErrorMonto = findViewById(R.id.tvErrorMonto);
+        tvErrorCuota = findViewById(R.id.tvErrorCuota);
+        tvErrorFecha = findViewById(R.id.tvErrorFecha);
+
+        btnGuardar = findViewById(R.id.btGuardar);
+    }
 
     private void showMenu() {
         floatSave.setAlpha(0f);
@@ -446,20 +444,14 @@ public class solicitud_acciones extends AppCompatActivity {
     public void calcularDias(){
         try {
 
-            //Lo primero que tienes que hacer es establecer el formato que tiene tu fecha para que
-            // puedas obtener un objeto de tipo Date el cual es el que se utiliza para obtener la diferencia.
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String currentDate = dateFormat.format(new Date());
 
-            //Parceas tus fechas en string a variables de tipo date se agrega un try catch porque si
-            // el formato declarado anteriormente no es igual a tu fecha obtendrás una excepción
             Date dateStart = dateFormat.parse(fechaActualizacion);
             Date dateEnd = dateFormat.parse(String.valueOf(currentDate));
 
-            //obtienes la diferencia de las fechas
             long difference = Math.abs(dateEnd.getTime() - dateStart.getTime());
 
-            //obtienes la diferencia en horas ya que la diferencia anterior esta en milisegundos
             difference = difference / (60 * 60 * 1000); // Horas
             difference = difference / 24; // Dias
 
@@ -491,7 +483,6 @@ public class solicitud_acciones extends AppCompatActivity {
         floatReject.animate().translationY(translationYaxis).alpha(0f).setInterpolator(interporlator).setDuration(100).start();
     }
 
-
     private void openMenu(){
         menuOpen = !menuOpen;
         floatMenu.setImageResource(R.drawable.ic_baseline_menu_open_24);
@@ -501,56 +492,68 @@ public class solicitud_acciones extends AppCompatActivity {
         floatReject.animate().translationY(0f).alpha(1f).setInterpolator(interporlator).setDuration(100).start();
     }
 
-
-    private void accionSolicitud(String URL){
+    private void accionSolicitud(String URL) {
+        Log.e("TAG_URL", URL );
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
 
-                        if (response.contains("CONECTADO")){
-                            Toast.makeText(getApplicationContext(), "SE HA ABIERTO SERSION EN OTRO DISPOSTIVO, LA SESION EN ESTE DISPOSITIVO SE HA CERRADO", Toast.LENGTH_LONG).show();
-                            Intent i = new Intent(getApplicationContext(), Login.class);
-                            startActivity(i);
-                        }
+                response -> {
 
-                        if (response.contains("Eliminado")){
-                            Toast.makeText(getApplicationContext(), "Solicitdo ha sido eliminada", Toast.LENGTH_LONG).show();
-
-                        }else if(response.contains("Aprobado")){
-                            Toast.makeText(getApplicationContext(), "Solicitdo ha sido aprobada", Toast.LENGTH_LONG).show();
-                        }else if (response.contains("Rechazado")){
-                            Toast.makeText(getApplicationContext(), "Solicitdo ha sido rechazada", Toast.LENGTH_LONG).show();
-
-                        }else if (response.contains("VACIO")){
-                            Toast.makeText(getApplicationContext(), "OCURRIO UN ERROR, NO SE PUDO COMPLETAR LA ACCION"+response, Toast.LENGTH_LONG).show();
-
-                        }
-
+                    if (response.contains("CONECTADO")) {
+                        Toast.makeText(getApplicationContext(), "SE HA ABIERTO SESION EN OTRO DISPOSITIVO, LA SESION EN ESTE DISPOSITIVO SE HA CERRADO", Toast.LENGTH_LONG).show();
+                        finish();
+                        Intent i = new Intent(getApplicationContext(), Login.class);
+                        startActivity(i);
+                    } else if (response.contains("Eliminado")) {
+                        Toast.makeText(getApplicationContext(), "Solicitud ha sido eliminada", Toast.LENGTH_LONG).show();
+                    } else if (response.contains("Aprobado")) {
+                        Toast.makeText(getApplicationContext(), "Solicitud ha sido aprobada", Toast.LENGTH_LONG).show();
+                    } else if (response.contains("Rechazado")) {
+                        Toast.makeText(getApplicationContext(), "Solicitud ha sido rechazada", Toast.LENGTH_LONG).show();
+                    } else if (response.contains("VACIO")) {
+                        Toast.makeText(getApplicationContext(), "OCURRIO UN ERROR, NO SE PUDO COMPLETAR LA ACCION: " + response, Toast.LENGTH_LONG).show();
+                        return;
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), error.getMessage(),Toast.LENGTH_SHORT).show();
+                    solicitud_acciones.super.getOnBackPressedDispatcher().onBackPressed();
 
-            }
-        }){
+                },
+                error -> {
+                    if (error instanceof NoConnectionError) {
+                        Toast.makeText(getApplicationContext(), "Sin conexión a internet", Toast.LENGTH_LONG).show();
+                    } else if (error instanceof TimeoutError) {
+                        Toast.makeText(getApplicationContext(), "Tiempo de respuesta agotado", Toast.LENGTH_LONG).show();
+                    } else if (error instanceof AuthFailureError) {
+                        Toast.makeText(getApplicationContext(), "Error de autenticación", Toast.LENGTH_LONG).show();
+                    } else if (error instanceof ServerError) {
+                        Toast.makeText(getApplicationContext(), "Error del servidor "+ error.getMessage(), Toast.LENGTH_LONG).show();
+                    } else if (error instanceof NetworkError) {
+                        Toast.makeText(getApplicationContext(), "Error de red", Toast.LENGTH_LONG).show();
+                    } else if (error instanceof ParseError) {
+                        Toast.makeText(getApplicationContext(), "Response parsing error", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error desconocido: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                    // Registrar el error para un mejor debugging
+                    Log.e("VolleyError", "Error: " + error.getMessage(), error);
+                }
+        ) {
+            @NonNull
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parametros= new HashMap<>();
+                Map<String, String> parametros = new HashMap<>();
                 parametros.put("idSolicitud", idSolicitud);
                 parametros.put("accion", accion);
                 parametros.put("user", nomuser);
+                parametros.put("rol", rol);
                 parametros.put("usermontoaprobado", montoaprobado);
                 parametros.put("tasaaprobada", tasaAprobada);
                 parametros.put("plazoaprobado", plazoaprobado);
-
-
                 return parametros;
             }
         };
-        requestQueue = Volley.newRequestQueue(this);
+
+        requestQueue  = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+        Log.e("VolleyError", "Error: " + requestQueue.toString());
     }
 
     private void enviarsms(String celular){
@@ -609,6 +612,7 @@ public class solicitud_acciones extends AppCompatActivity {
 
         }
     }
+
     private void listarFrecuencias(String URL){
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
             @Override
@@ -640,7 +644,7 @@ public class solicitud_acciones extends AppCompatActivity {
                 }
 
             }
-        }, new Response.ErrorListener() {
+        }, new ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
@@ -680,7 +684,7 @@ public class solicitud_acciones extends AppCompatActivity {
                 }
 
             }
-        }, new Response.ErrorListener() {
+        }, new ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getApplicationContext(), error.toString(),Toast.LENGTH_SHORT).show();

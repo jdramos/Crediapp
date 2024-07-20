@@ -104,28 +104,42 @@ public class Dashbord extends AppCompatActivity implements View.OnClickListener 
 
                 break;
             case R.id.solicitud_card :
-                i = new Intent(this, ListaSolicitudes.class);
-                startActivity(i);
+                if(rol.equals("3")){
+                    i = new Intent(this, ListaSolicitudes.class);
+                    startActivity(i);
+                }else{
+                    i = new Intent(this, ListaSolicitudSucursal.class);
+                    startActivity(i);
+                }
                 break;
             case R.id.autorizacion_card :
                 i = new Intent(this, miproductividad.class);
                 startActivity(i);
                 break;
             case R.id.cobros_card:
-                if(rol.equals("3")){
-                    i = new Intent(this, ListaCobros.class);
-                    i.putExtra("numSuc", spNumSuc);
-                    i.putExtra("codOfi", spCodOfi);
-                    i.putExtra("rol", rol);
-                    startActivity(i);
-                }else if(rol.equals("2") || rol.equals("4")) {
-                    i = new Intent(this, ListaCobrosOficial.class);
-                    i.putExtra("numSuc", spNumSuc);
-                    startActivity(i);
-                }else if(rol.equals("1")){
-                    i = new Intent(this, ListaCobrosSucursal.class);
-                    i.putExtra("rol", rol);
-                    startActivity(i);
+                switch (rol) {
+                    case "3":
+                        i = new Intent(this, ListaCobros.class);
+                        i.putExtra("numSuc", spNumSuc);
+                        i.putExtra("codOfi", spCodOfi);
+                        i.putExtra("rol", rol);
+                        startActivity(i);
+                        break;
+                    case "2":
+                        i = new Intent(this, ListaCobrosOficial.class);
+                        i.putExtra("numSuc", spNumSuc);
+                        startActivity(i);
+                        break;
+                    case "1":
+                        i = new Intent(this, ListaCobrosSucursal.class);
+                        i.putExtra("rol", rol);
+                        startActivity(i);
+                        break;
+                    case "4":
+                        i = new Intent(this, ListaCobrosSucursal.class);
+                        i.putExtra("rol", rol);
+                        startActivity(i);
+                        break;
                 }
                 break;
 
@@ -162,7 +176,8 @@ public class Dashbord extends AppCompatActivity implements View.OnClickListener 
 
     }
 
-    public void onBackPressed(){
+    public void onBackPressed() {
+        super.onBackPressed();
         salir();
 
     }

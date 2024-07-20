@@ -90,11 +90,16 @@ public class ListaSolicitudes extends AppCompatActivity  {
         lvSolicitud.setEmptyView(tvVacio);
 
 
+        String strRol    = getIntent().getStringExtra("rol");
+        String strCodOfi = getIntent().getStringExtra("codOfi");
+        //String strOficobro = getIntent().getStringExtra("ofiCobro");
+        String strNumSuc = getIntent().getStringExtra("numSuc");
+        //String strNomOfi  = getIntent().getStringExtra("nomOfi");
+
         espere();
-        url = spWeb+"/"+spEmpresa+"/listar_solicitudes.php?rol="+rol+"&codOfi="+spCodOfi+"&numSuc="+spNumSuc;
+
+        url = spWeb+"/"+spEmpresa+"/listar_solicitudes.php?codOfi="+strCodOfi+"&numSuc="+strNumSuc+"&rol="+rol;
         listar(url);
-
-
 
             lvSolicitud.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -230,21 +235,22 @@ public class ListaSolicitudes extends AppCompatActivity  {
                         String fechaaprobadoGteSuc  = (jsonObject.getString("fechaaprobadoGteSuc"));
                         String fechaaprobadogteGral = (jsonObject.getString("fechaaprobadoGteGral"));
                         String fechaaplicado        = (jsonObject.getString("fechaaplicado"));
-                        String saldoActual          = (jsonObject.getString("saldoActual"));
                         String comentarios          = (jsonObject.getString("observa"));
+                        String saldoActual          = (jsonObject.getString("saldoActual"));
                         String consultaCrediticia   = (jsonObject.getString("consultaCredi"));
                         String capacidadPago        = (jsonObject.getString("DisponibilidadNeta"));
                         String coberturaGtia        = (jsonObject.getString("ValorGarantia"));
                         String recordInterno        = (jsonObject.getString("recordInterno"));
                         String fechaActualizacion   = (jsonObject.getString("fechaActualizacion"));
 
-
                         arrayList.add(new SolicitudesModel(idSolicitud, codCli, nomCli, fecha, monto, telefono, aprobado,
                                 aplicado, plazo, tasa, idFrecuencia, frecuencia, tipCred, codCre, nomSuc, solicitadopor,
                                 aprobadoSup, aprobadoGteSuc, aprobadoGteGral, aplicadopor, fechasolcitud, fechaaprobadoSup,
                                 fechaaprobadoGteSuc, fechaaprobadogteGral, fechaaplicado, Double.parseDouble(saldoActual),
                                 comentarios, consultaCrediticia, capacidadPago, coberturaGtia, recordInterno, fechaActualizacion));
+
                         adapter = new SolicitudesListAdapter(getApplicationContext(), arrayList);
+
                         lvSolicitud.setAdapter(adapter);
 
                         totalSolicitud = totalSolicitud+Double.parseDouble(monto);

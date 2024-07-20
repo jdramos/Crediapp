@@ -91,13 +91,10 @@ public class solicitudes extends AppCompatActivity {
         urlClientes = spWeb+"/"+spEmpresa+"/listar_clientes.php?codOfi="+spCodOfi+
         "&rol="+rolUser+"&numSuc="+spNomSuc;
         listarFrecuencias(url);
-       listarClientes(urlClientes);
+        listarClientes(urlClientes);
         ArrayAdapter<clientesModel> adapterCliente =
                 new ArrayAdapter<clientesModel>(getApplicationContext(),
                         android.R.layout.simple_spinner_dropdown_item, listaClientes);
-
-
-
 
         etMontoSolicitado.addTextChangedListener(new TextWatcher() {
             @Override
@@ -121,7 +118,6 @@ public class solicitudes extends AppCompatActivity {
 
             }
         });
-
 
         etTasa.addTextChangedListener(new TextWatcher() {
             @Override
@@ -150,7 +146,7 @@ public class solicitudes extends AppCompatActivity {
             }
         });
 
-       etPlazo.addTextChangedListener(new TextWatcher() {
+        etPlazo.addTextChangedListener(new TextWatcher() {
            @Override
            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -171,7 +167,6 @@ public class solicitudes extends AppCompatActivity {
 
            }
        });
-
 
         btGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,7 +220,6 @@ public class solicitudes extends AppCompatActivity {
 
             }
         });
-
 
         spFrecuencia.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
@@ -363,8 +357,6 @@ public class solicitudes extends AppCompatActivity {
 
     }
 
-
-
     private void guardarSolicitud (String URL){
         espere();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
@@ -422,7 +414,6 @@ public class solicitudes extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
-
 
     private void limpiar(){
         etCuotaxMes.setText("0");

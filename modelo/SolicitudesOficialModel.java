@@ -1,20 +1,16 @@
 package com.example.credimovil.modelo;
 
-public class SolicitudesModel {
+public class SolicitudesOficialModel {
 
     private String idSolicitud;
     private String codCli;
     private String nomCli;
     private String fecha;
-    private String codOfi;
-    private String nomOfi;
     private String monto;
     private String telefono;
     private String aprobado;
-    private String estado;
     private String aplicado;
     private double plazo;
-    private int cantSolicitud;
     private double tasa;
     private String idFrecuencia;
     private String frecuencia;
@@ -39,8 +35,8 @@ public class SolicitudesModel {
     private String recordInterno;
     private String fechaActualizacion;
 
-    public SolicitudesModel(String codCli, String nomCli, String monto, String aprobado,
-                            String aplicado) {
+    public SolicitudesOficialModel(String codCli, String nomCli, String monto, String aprobado,
+                                   String aplicado) {
         this.codCli = codCli;
         this.nomCli = nomCli;
         this.monto = monto;
@@ -48,26 +44,18 @@ public class SolicitudesModel {
         this.aplicado = aplicado;
     }
 
-    public SolicitudesModel(String codOfi, String nomOfi, int cantSolicitud, String monto, String estado) {
-        this.codOfi = codOfi;
-        this.nomOfi = nomOfi;
-        this.cantSolicitud = cantSolicitud;
-        this.monto = monto;
-        this.estado = estado;
-    }
-
-    public SolicitudesModel(String idSolicitud, String codCli, String nomCli,
-                            String fecha, String monto, String telefono,
-                            String aprobado, String aplicado, double plazo,
-                            double tasa, String idFrecuencia, String  frecuencia, String tipCred,
-                            String codCred, String nomSuc, String solicitadopor,
-                            String aprobadoSup, String aprobadoGteSuc, String aprobadoGteGral,
-                            String aplicadopor, String fechasolicitud,
-                            String fechaaprobadoSup, String fechaaprobadoGteSuc,
-                            String fechaaprobadoGteGral, String fechaaplicado,
-                            double saldoActual, String comentarios, String consultaCrediticia,
-                            String capacidadPago, String coberturaGtia, String recordInterno,
-                            String fechaActualizacion) {
+    public SolicitudesOficialModel(String idSolicitud, String codCli, String nomCli,
+                                   String fecha, String monto, String telefono,
+                                   String aprobado, String aplicado, double plazo,
+                                   double tasa, String idFrecuencia, String  frecuencia, String tipCred,
+                                   String codCred, String nomSuc, String solicitadopor,
+                                   String aprobadoSup, String aprobadoGteSuc, String aprobadoGteGral,
+                                   String aplicadopor, String fechasolicitud,
+                                   String fechaaprobadoSup, String fechaaprobadoGteSuc,
+                                   String fechaaprobadoGteGral, String fechaaplicado,
+                                   double saldoActual, String comentarios, String consultaCrediticia,
+                                   String capacidadPago, String coberturaGtia, String recordInterno,
+                                   String fechaActualizacion) {
         this.idSolicitud = idSolicitud;
         this.codCli = codCli;
         this.nomCli = nomCli;
@@ -111,19 +99,8 @@ public class SolicitudesModel {
     public String getNomCli() {
         return nomCli;
     }
-    public String getCodOfi() {
-        return codOfi;
-    }
 
-    public void setCodOfi(String codOfi) {
-        this.codOfi = codOfi;
-    }
-
-    public String getNomOfi() {
-        return nomOfi;
-    }
-
-        public String getFecha() {
+    public String getFecha() {
         return fecha;
     }
 
@@ -242,15 +219,7 @@ public class SolicitudesModel {
         return recordInterno;
     }
 
-    public String getEstado() {
-        return estado;
-    }
-
     public String getFechaActualizacion() {
         return fechaActualizacion;
-    }
-
-    public int getCantSolicitud() {
-        return cantSolicitud;
     }
 }
